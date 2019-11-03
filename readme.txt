@@ -44,4 +44,4 @@ the commands should be given in the following format
 command <argument 1> <argument 2>
 
 ex:
-write_file file1.txt hello world
+write_file file1.txt hello world.

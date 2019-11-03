@@ -1,36 +1,44 @@
-from server_class import Server
+""" Initialization of Server
+"""
 import asyncio
 import signal
+from server_class import Server
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
-client_dictonery = {}
+CLIENT_DICTIONARY = {}
 
 async def handle_echo(reader, writer):
+    """ Server-client connections are handled in this function"""
     addr = writer.get_extra_info('peername')
     message = f"{addr} is connected !!!!"
-    client_dictonery[addr[1]] = Server()
+    CLIENT_DICTIONARY[addr[1]] = Server()
     print(message)
     while True:
         data = await reader.read(10000)
         message = data.decode().strip()
         if message == 'quit':
             break
-        
         print(f"Received {message} from {addr}")
-        reply = client_dictonery[addr[1]].split(message)
+        reply = CLIENT_DICTIONARY[addr[1]].split(message)
         print(f"Send: {reply}")
         #hello = 'successful'
-        writer.write(reply.encode())
+        if reply != '' or reply != 'None':
+            writer.write(reply.encode())
+        else:
+            reply = '.'
+            writer.write(reply.encode())
         await writer.drain()
     print("Close the connection")
     writer.close()
 
 
 async def main():
-    ip = '127.0.0.1'
-    port = 8888
+    """ In this function the main program will starts execution
+    """
+    server_ip = '127.0.0.1'
+    port = 8080
     server = await asyncio.start_server(
-        handle_echo, ip, port)
+        handle_echo, server_ip, port)
 
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')

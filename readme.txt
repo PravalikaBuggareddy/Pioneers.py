@@ -9,6 +9,7 @@ Files included:
 5. commands.txt
 6. adminlog.txt
 7. userlog.txt
+8. loginlog.txt
 
 these are the files required for executing the program 
 
@@ -20,6 +21,7 @@ server:
 3. server_logic.py
 4. adminlog.txt
 5. userlog.txt
+6. loginlog.txt(optional)
 
 client:
 1. Client.py

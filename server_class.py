@@ -1,8 +1,8 @@
 """reads Requests from the server and handles method calls
 """
+import os
 from server_logic import Adminservices
 from server_logic import Userservices
-import os
 
 class Server:
     """
@@ -163,9 +163,17 @@ class Server:
                 self.password
             )
     def checklog(self, username):
+        """
+        checks if the username is already logged in from
+        another client
+            Parameters:
+                username : string
+                    stores the users name
+
+        """
         log_file = 'loginlog.txt'
-        with open(log_file) as f:
-            if username in f.read():
+        with open(log_file) as f_r:
+            if username in f_r.read():
                 return True
         return False
 
@@ -353,7 +361,7 @@ class Server:
             if command == 'login':
                 try:
                     reply = self.login(split_message)
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except:
@@ -362,7 +370,7 @@ class Server:
             elif command == 'register':
                 try:
                     reply = self.start_register()
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except:
@@ -373,9 +381,9 @@ class Server:
             if command == 'list':
                 try:
                     reply = self.client.list_files()
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
-                    reply = 'Something went wrong'   
+                    reply = 'Something went wrong'  
                 except:
                     reply = 'error occured'
                 return reply
@@ -384,7 +392,7 @@ class Server:
                 try:
                     argument_1 = split_message[1]
                     reply = self.client.change_directory(argument_1, self.privilege)
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except:
@@ -395,7 +403,7 @@ class Server:
                 try:
                     argument_1 = split_message[1]
                     reply = self.client.start_read(argument_1)
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except IndexError:
@@ -416,7 +424,7 @@ class Server:
                     assert reply is not None
                 except IndexError:
                     reply = self.client.write_file(argument_1)
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except:
@@ -427,7 +435,7 @@ class Server:
                 try:
                     argument_1 = split_message[1]
                     reply = self.client.create_folder(argument_1, self.privilege)
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except:
@@ -444,7 +452,7 @@ class Server:
                         return 'Username doesnot exist'
                     user_privilege = split_message_reply[2]
                     reply = self.client.delete_user(argument_1, argument_2, user_privilege)
-                    assert reply is not None 
+                    assert reply is not None
                 except AssertionError:
                     reply = 'Something went wrong'
                 except AttributeError:

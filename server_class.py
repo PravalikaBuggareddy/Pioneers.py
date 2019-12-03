@@ -162,6 +162,12 @@ class Server:
                 self.username,
                 self.password
             )
+    def checklog(self, username):
+        log_file = 'loginlog.txt'
+        with open(log_file) as f:
+            if username in f.read():
+                return True
+        return False
 
     def login(self, split_message):
         """Initialises login for the client
@@ -172,6 +178,8 @@ class Server:
                     splits the message
         """
         username = split_message[1]
+        if self.checklog(username):
+            return 'loggedin'
         password = split_message[2]
         reply = self.getpassword(username)
         split_message_reply = reply.split(' ', 2)  #list
@@ -190,6 +198,7 @@ class Server:
             self.password = password
             self.privilege = privilege
             self.initilise()
+            self.modify_file(self.root_directory, 'loginlog.txt', self.username)
             return 'successful'
         elif check_reply == 'failed':
             return 'failed'
@@ -342,25 +351,42 @@ class Server:
         command = split_message[0]
         if self.username == '':
             if command == 'login':
-                reply = self.login(split_message)
+                try:
+                    reply = self.login(split_message)
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
+                except:
+                    reply = 'error occurred'
                 return reply
             elif command == 'register':
-                reply = self.start_register()
+                try:
+                    reply = self.start_register()
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
+                except:
+                    reply = 'error occurred'
                 return reply
             return 'failed'
         else:
             if command == 'list':
                 try:
                     reply = self.client.list_files()
-                    return reply
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'   
                 except:
                     reply = 'error occured'
-                    return reply
+                return reply
 
             elif command == 'change_folder':
                 try:
                     argument_1 = split_message[1]
                     reply = self.client.change_directory(argument_1, self.privilege)
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
                 except:
                     reply = 'Failed'
                 return reply
@@ -369,6 +395,9 @@ class Server:
                 try:
                     argument_1 = split_message[1]
                     reply = self.client.start_read(argument_1)
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
                 except IndexError:
                     reply = self.client.start_read(None)
                 except:
@@ -384,8 +413,12 @@ class Server:
                 try:
                     argument_2 = split_message[2]
                     reply = self.client.write_file(argument_1, argument_2)
+                    assert reply is not None
                 except IndexError:
                     reply = self.client.write_file(argument_1)
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
                 except:
                     reply = 'error occured'
                 return reply
@@ -394,6 +427,9 @@ class Server:
                 try:
                     argument_1 = split_message[1]
                     reply = self.client.create_folder(argument_1, self.privilege)
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
                 except:
                     reply = 'error occured'
                 return reply
@@ -401,14 +437,40 @@ class Server:
                 try:
                     argument_1 = split_message[1]
                     argument_2 = split_message[2]
-                    reply = self.client.delete_user(argument_1, argument_2)
-                    return reply
+                    get_privilage = self.getpassword(argument_1)
+                    split_message_reply = get_privilage.split(' ', 2)
+                    given_username = split_message_reply[0]
+                    if given_username == 'failed':
+                        return 'Username doesnot exist'
+                    user_privilege = split_message_reply[2]
+                    reply = self.client.delete_user(argument_1, argument_2, user_privilege)
+                    assert reply is not None 
+                except AssertionError:
+                    reply = 'Something went wrong'
+                except AttributeError:
+                    reply = 'You are not authorised for this service'
                 except:
                     reply = 'error occured'
-                    return reply
-
+                return reply
             else:
                 return 'Invalid input'
+
+    def removelog(self):
+        """
+        This function is used to remove the user name from the login log when the user
+        """
+        name = os.path.join(self.root_directory, 'loginlog.txt')
+        open_file = open(name, 'r')
+        file_lines = open_file.readlines()
+        for i in range(len(file_lines)):
+            if self.username in file_lines[i]:
+                pos = i
+        open_file.close()
+        open_file = open(name, 'w')
+        for i in range(len(file_lines)):
+            if pos != i:
+                open_file.writelines(file_lines[i])
+        open_file.close()
 
     def split(self, message):
         """splits the message from the client into several parts and stores into a list and

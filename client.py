@@ -5,7 +5,8 @@ import asyncio
 
 ISSUED = ''
 def start():
-    """this function is responsibale for taking choice for login and register
+    """
+    this function is responsibale for taking choice for login and register
     """
     print('******* File management System by Pioneers *******')
     while True:
@@ -21,7 +22,8 @@ def start():
         print('Invalid Input ')
 
 def process(message):
-    """messages that need to be sent to the server are filtered
+    """
+    messages that need to be sent to the server are filtered
     for client commands.
     """
     split_message = message.split(' ', 1)
@@ -36,7 +38,7 @@ def process(message):
             return False
         elif count_arguments == 2:
             argument = split_message[1]
-            if argument == 'ISSUED':
+            if argument == 'issued':
                 print(ISSUED)
                 return False
             elif argument == 'clear':
@@ -51,7 +53,8 @@ def process(message):
     return True
 
 def login():
-    """this functions inputs login credential and combines them into an argument
+    """
+    this functions inputs login credential and combines them into an argument
     """
     print('**** Login *****')
     user_name = input('User Name : ')
@@ -60,7 +63,8 @@ def login():
     return result
 
 def register():
-    """this functions inputs registeration details and combines them into an argument
+    """
+    this functions inputs registeration details and combines them into an argument
     """
     print('**** Register *****')
     user_name = input('Create User Name : ')
@@ -72,7 +76,8 @@ def register():
     return 'invalid'
 
 async def tcp_echo_client():
-    """this functions initilases connection with the server
+    """
+    this functions initilases connection with the server
     """
     reader, writer = await asyncio.open_connection(
         '127.0.0.1', 8080)
@@ -99,6 +104,10 @@ async def tcp_echo_client():
             continue
         elif message == 'invalid':
             print('invalid input ')
+            continue
+        elif message == 'loggedin':
+            print('user is already loggedin from another client')
+            continue
         else:
             print('Error has Occured, Please Try Again ')
             continue
@@ -119,4 +128,7 @@ async def tcp_echo_client():
     print('Close the connection')
     writer.close()
 
-asyncio.run(tcp_echo_client())
+try:
+    asyncio.run(tcp_echo_client())
+except ConnectionRefusedError:
+    print('Failed to connect to the server')

@@ -1,12 +1,37 @@
+"""
+This module contains a class TestSum which tests for all the success and failure 
+cases of file management system
+"""
 import unittest
 from server_logic import Adminservices
 from server_logic import Userservices
 import os
 
-
 class TestSum(unittest.TestCase):
+    """This module contains the class TestSum 
+        Methods:
+        ---------------
+            test_folder_creation(self):
+                tests for the success and failure cases of folder creation
+            test_write_file(self):
+                tests for writing and clearing in a file
+            test_change_folder_admin(self):
+                checks whether the directory have been changed and if the users directory 
+                is out of the predefined directory then the access will be denied
+            test_change_folder_user(self):
+                checks whether the directory have been changed and if the users directory is
+                out of the predefined directory then the access will be denied
+            test_read_file(self):
+                checks whether the file reads the text from a folder and whether the file
+                exists
+            test_delete_file(self):
+                tests for the user deletion and the user cannot delete their self
 
+    """
     def test_folder_creation(self):
+        """
+        tests for the success and failure cases of folder creation
+        """
         client = Userservices(
                     os.getcwd(),
                     os.getcwd(),
@@ -27,6 +52,9 @@ class TestSum(unittest.TestCase):
         self.assertListEqual(result, expectedvalues)
     
     def test_write_file(self):
+        """
+        tests for writing,editing in a file and clearing the file
+        """
         client = Userservices(
                     os.getcwd(),
                     os.getcwd(),
@@ -49,6 +77,10 @@ class TestSum(unittest.TestCase):
         self.assertListEqual(result, expectedvalues)
 
     def test_change_folder_admin(self):
+        """
+        checks whether the directory have been changed and if the users directory 
+        is out of the predefined directory then the access will be denied
+        """
         userpath = os.path.join(os.getcwd(),'pawan')
         client = Userservices(
                     os.getcwd(),
@@ -82,6 +114,10 @@ class TestSum(unittest.TestCase):
         self.assertListEqual(result, expectedvalues)
     
     def test_change_folder_user(self):
+        """
+        checks whether the directory have been changed and if the users directory is
+        out of the predefined directory then the access will be denied.
+        """
         userpath = os.path.join(os.getcwd(),'pawan')
         client = Userservices(
                     os.getcwd(),
@@ -111,6 +147,10 @@ class TestSum(unittest.TestCase):
         self.assertListEqual(result, expectedvalues)
     
     def test_read_file(self):
+        """
+        checks whether the file reads the text from a folder and whether the file
+        exists 
+        """
         userpath = os.path.join(os.getcwd(),'pravallika')
         client = Userservices(
                     os.getcwd(),
@@ -138,6 +178,10 @@ class TestSum(unittest.TestCase):
         self.assertListEqual(result, expectedvalues)
 
     def test_delete_file(self):
+        """
+        tests for the user deletion and the user cannot delete their self
+        """
+
         client = Adminservices(
                     os.getcwd(),
                     os.getcwd(),

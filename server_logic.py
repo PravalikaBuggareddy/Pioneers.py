@@ -156,7 +156,8 @@ class Userservices:
             self.modify_file(directory, 'log.txt', i)
 
     def modify_file(self, directory, file_name, input_val):
-        """this function adds names to log file
+        """
+        this function adds names to log file
         Parameters:
             directory : string
                 stores the directory location
@@ -164,7 +165,6 @@ class Userservices:
                 stores the file name
             input_val : string
                 stores the input that has to be written in the file
-
         """
         file_name = str(f'{directory}\\{file_name}')
         file = open(file_name, 'a')
@@ -173,7 +173,8 @@ class Userservices:
         file.close()
 
     def write_file(self, file_name, input_string=None):
-        """writes client input into the file
+        """
+        writes client input into the file
         Parameters:
             file_name : string
                 stores the file name
@@ -196,7 +197,8 @@ class Userservices:
         return reply
 
     def start_read(self, file_name):
-        """Reads the values from the file and returns exactly 100 character
+        """
+        Reads the values from the file and returns exactly 100 character
         it also saves the file name and checks if the new file name is similar
         to the privious file. if both are similar it returns the next 100 chracters
 
@@ -222,12 +224,18 @@ class Userservices:
                 self.start_point = 0
                 reply = self.view_file(path, self.start_point)
                 return reply
+            reply = 'file doesnot exist'
+            return reply
+        except PermissionError:
+            reply = 'Requested file is a folder'
+            return reply
         except:
-            reply = 'File not found'
+            reply = 'error occured'
             return reply
 
     def view_file(self, file_name, startpoint):
-        """view the file
+        """
+        view the file
         Parameters:
             file_name : string
                 stores the file name that has to be read
@@ -242,7 +250,8 @@ class Userservices:
         return str(value[startpoint:strt])
 
     def reverse(self, val):
-        """ reverse the string
+        """
+        reverse the string
         Parameters:
             val : string
                 stores the string that has to be reversed
@@ -252,13 +261,18 @@ class Userservices:
             string = i + string
         return string
     def change_directory(self, folder_name, privilage):
-        """Changes the directory
+        """
+        Changes the directory
         Parameters:
             folder_name : string
                 name of the folder to change
             privilage : string
                 this is used to check privilages of client
         """
+        path = self.reverse(self.root_directory)
+        num = path.find('\\')+1
+        final_path = path[num:]
+        print(final_path)
         inp = '..'
         try:
             if folder_name == inp:
@@ -266,6 +280,8 @@ class Userservices:
                 num = reval.find('\\')+1
                 new_path = reval[num:]
                 if self.reverse(new_path) == self.root_directory and privilage != 'admin':
+                    return 'access denied'
+                if self.reverse(new_path) == self.reverse(final_path):
                     return 'access denied'
                 self.curr_directory = self.reverse(new_path)
                 reply = 'directory changed to '+self.curr_directory
@@ -305,8 +321,9 @@ class Adminservices(Userservices):
         self.read_file = ''
         self.start_point = 0
 
-    def delete_user(self, folder_name, password):
-        """this methods deletes the user and user directory
+    def delete_user(self, folder_name, password, privalage):
+        """
+        this methods deletes the user and user directory
         this method is only available to the client with admin privilages
         Parameters:
             folder_name : string
@@ -316,7 +333,14 @@ class Adminservices(Userservices):
         """
         if password == self.password:
             try:
-                name = os.path.join(self.root_directory, 'userlog.txt')
+                if folder_name == self.username:
+                    reply = 'You cannot delete your self'
+                    return reply
+                if privalage == 'admin':
+                    file_name = 'adminlog.txt'
+                else:
+                    file_name = 'userlog.txt'
+                name = os.path.join(self.root_directory, file_name)
                 open_file = open(name, 'r')
                 file_lines = open_file.readlines()
                 for i in range(len(file_lines)):
@@ -333,7 +357,7 @@ class Adminservices(Userservices):
                 reply = 'User Deleted'
                 return reply
             except:
-                reply = 'user not found'
+                reply = 'error occured'
                 return reply
         reply = 'Un-Authorized'
         return reply
